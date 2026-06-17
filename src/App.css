@@ -64,6 +64,8 @@
 
 html {
   font-family: "Champagne & Limousines", sans-serif;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 @keyframes pulse-soft {
