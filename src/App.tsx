@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import "./App.css";
 import SplashScreen from "./SplashScreen";
 import TitleBar from "./TitleBar";
+import Sidebar from "./Sidebar";
 
 type Theme = "light" | "dark" | "industrial";
 
@@ -23,6 +24,7 @@ function App() {
   return (
     <div className="min-h-screen flex flex-col bg-theme-bg text-theme-text transition-colors duration-300">
       <TitleBar />
+      <Sidebar />
       <main className="flex-1 flex flex-col items-center justify-center gap-8">
         <h1 className="text-4xl font-bold text-theme-primary">Tools-33</h1>
 
