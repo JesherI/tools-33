@@ -1,32 +1,18 @@
 import { useEffect, useState } from "react";
 
 interface SplashScreenProps {
+  progress: number; // 0-1 real loading progress
   onFinish: () => void;
 }
 
-export default function SplashScreen({ onFinish }: SplashScreenProps) {
-  const [progress, setProgress] = useState(0);
+export default function SplashScreen({ progress, onFinish }: SplashScreenProps) {
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
-    const start = performance.now();
-    const duration = 10000;
-    let frame: number;
-
-    function tick(now: number) {
-      const elapsed = now - start;
-      const p = Math.min(elapsed / duration, 1);
-      setProgress(p);
-      if (p < 1) {
-        frame = requestAnimationFrame(tick);
-      } else {
-        setTimeout(() => setFadeOut(true), 300);
-      }
+    if (progress >= 1 && !fadeOut) {
+      setFadeOut(true);
     }
-
-    frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, []);
+  }, [progress, fadeOut]);
 
   useEffect(() => {
     if (!fadeOut) return;
@@ -39,7 +25,9 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
       className={`fixed inset-0 z-50 flex flex-col items-center justify-center gap-10 transition-opacity duration-500 ${
         fadeOut ? "opacity-0" : "opacity-100"
       }`}
-      style={{ backgroundColor: "var(--theme-bg)" }}
+      style={{
+        backgroundColor: "var(--theme-bg)",
+      }}
     >
       <img
         src="/Icon.svg"
@@ -47,9 +35,9 @@ export default function SplashScreen({ onFinish }: SplashScreenProps) {
         className="w-28 h-28 md:w-36 md:h-36 animate-pulse-soft"
       />
 
-      <div className="w-40 h-1 rounded-full overflow-hidden bg-theme-muted/30">
+      <div className="w-40 h-1 rounded-full overflow-hidden" style={{ backgroundColor: "color-mix(in srgb, var(--theme-text) 20%, transparent)" }}>
         <div
-          className="h-full rounded-full transition-all duration-75"
+          className="h-full rounded-full transition-all duration-150 ease-out"
           style={{
             width: `${progress * 100}%`,
             backgroundColor: "var(--theme-primary)",

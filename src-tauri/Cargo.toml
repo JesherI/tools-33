@@ -1,6 +1,6 @@
 [package]
 name = "tools-33"
-version = "0.1.4"
+version = "0.1.5"
 description = "A Tauri App"
 authors = ["you"]
 edition = "2021"
@@ -24,4 +24,14 @@ tauri-plugin-dialog = "2"
 tauri-plugin-fs = "2"
 serde = { version = "1", features = ["derive"] }
 sysinfo = "0.33"
+  hayro = { version = "0.7", default-features = true }
+  image = { version = "0.25", default-features = false, features = ["jpeg", "png", "gif", "webp"] }
+  zip = "2"
+  rayon = "1"
+  scopeguard = "1"
+  base64 = "0.22"
+  png = "0.17"
+  wgpu = "0.20"
+  pollster = "0.4"
+  lopdf = { version = "0.35", features = ["embed_image", "nom_parser"] }
 

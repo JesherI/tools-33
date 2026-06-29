@@ -18,6 +18,57 @@ const revistaIcon = (
   </svg>
 );
 
+const pdfIcon = (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+    <polyline points="14 2 14 8 20 8" />
+    <line x1="16" y1="13" x2="8" y2="13" />
+    <line x1="16" y1="17" x2="8" y2="17" />
+    <polyline points="10 9 9 9 8 9" />
+  </svg>
+);
+
+const texturasIcon = (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+    <rect x="3" y="3" width="7" height="7" rx="1" />
+    <rect x="14" y="3" width="7" height="7" rx="1" />
+    <rect x="3" y="14" width="7" height="7" rx="1" />
+    <rect x="14" y="14" width="7" height="7" rx="1" />
+  </svg>
+);
+
+const escaladorIcon = (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+    <circle cx="8.5" cy="8.5" r="1.5" />
+    <polyline points="21 15 16 10 5 21" />
+    <path d="M14 4l4 0 0 4" />
+    <path d="M18 4l-3.5 3.5" />
+  </svg>
+);
+
+const compresorIcon = (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+    <path d="M4 14h6v6M20 10h-6V4M14 10l7-7M3 21l7-7" />
+  </svg>
+);
+
+const unirIcon = (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+    <path d="M8 3H5a2 2 0 0 0-2 2v3m0 8v3a2 2 0 0 0 2 2h3m8-16h3a2 2 0 0 1 2 2v3m0 8v3a2 2 0 0 1-2 2h-3" />
+    <path d="M12 7v10M9 10l3-3 3 3M9 14l3 3 3-3" />
+  </svg>
+);
+
+const qrIcon = (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="shrink-0">
+    <rect x="3" y="3" width="7" height="7" rx="1" />
+    <rect x="14" y="3" width="7" height="7" rx="1" />
+    <rect x="3" y="14" width="7" height="7" rx="1" />
+    <path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20v.01" />
+  </svg>
+);
+
 interface SidebarProps {
   theme: Theme;
   setTheme: (t: Theme) => void;
@@ -31,9 +82,35 @@ const themes: { id: Theme; label: string }[] = [
   { id: "industrial", label: "Industrial" },
 ];
 
-const navItems = [
-  { id: "equipo", icon: equipoIcon, label: "Equipo" },
-  { id: "revista", icon: revistaIcon, label: "Revista" },
+const navSections: { label: string; items: { id: string; icon: React.ReactNode; label: string }[] }[] = [
+  {
+    label: "Sistema",
+    items: [
+      { id: "equipo", icon: equipoIcon, label: "Equipo" },
+    ],
+  },
+  {
+    label: "Imagen",
+    items: [
+      { id: "escalador", icon: escaladorIcon, label: "Escalador" },
+      { id: "qr", icon: qrIcon, label: "Generador QR" },
+      { id: "texturas", icon: texturasIcon, label: "Texturas" },
+    ],
+  },
+  {
+    label: "PDF",
+    items: [
+      { id: "compresor", icon: compresorIcon, label: "Compresor" },
+      { id: "pdf", icon: pdfIcon, label: "PDF a IMG" },
+      { id: "unir", icon: unirIcon, label: "Unir PDFs" },
+    ],
+  },
+  {
+    label: "Publicacion",
+    items: [
+      { id: "revista", icon: revistaIcon, label: "Revista" },
+    ],
+  },
 ];
 
 export default function Sidebar({ theme, setTheme, screen, onNavigate }: SidebarProps) {
@@ -71,31 +148,42 @@ export default function Sidebar({ theme, setTheme, screen, onNavigate }: Sidebar
 
         <div className="mx-4 h-px" style={{ backgroundColor: "var(--theme-border)" }} />
 
-        {/* Nav items */}
-        <div className="p-2 flex flex-col gap-1">
-          {navItems.map((item) => {
-            const active = screen === item.id;
-            return (
-              <div
-                key={item.id}
-                onClick={() => onNavigate(item.id)}
-                className={`w-full flex items-center gap-3 px-3 py-3 rounded-xl cursor-pointer transition-all duration-200 ${
-                  active
-                    ? "text-theme-primary bg-theme-primary/15"
-                    : "text-theme-muted/60 hover:text-theme-primary hover:bg-theme-primary/10"
-                } ${open ? "justify-start" : "justify-center"}`}
-              >
-                <div className={`shrink-0 ${open ? "" : "translate-x-[6px]"}`}>
-                  {item.icon}
-                </div>
-                <span className={`text-sm font-medium whitespace-nowrap transition-all duration-300 ${
-                  open ? "opacity-100 max-w-32 delay-0" : "opacity-0 max-w-0 overflow-hidden"
-                }`}>
-                  {item.label}
-                </span>
+        {/* Nav sections */}
+        <div className="p-2 flex flex-col gap-3 overflow-y-auto scrollbar-thin">
+          {navSections.map((section) => (
+            <div key={section.label}>
+              <span className={`block text-[10px] font-semibold uppercase tracking-[0.12em] px-3 pb-1 transition-all duration-300 ${
+                open ? "opacity-60 max-w-24" : "opacity-0 max-w-0 overflow-hidden"
+              }`} style={{ color: "var(--theme-muted)" }}>
+                {section.label}
+              </span>
+              <div className="flex flex-col gap-0.5">
+                {section.items.map((item) => {
+                  const active = screen === item.id;
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={() => onNavigate(item.id)}
+                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition-all duration-200 ${
+                        active
+                          ? "text-theme-primary bg-theme-primary/15"
+                          : "text-theme-muted/60 hover:text-theme-primary hover:bg-theme-primary/10"
+                      } ${open ? "justify-start" : "justify-center"}`}
+                    >
+                      <div className={`shrink-0 ${open ? "" : "translate-x-[6px]"}`}>
+                        {item.icon}
+                      </div>
+                      <span className={`text-sm font-medium whitespace-nowrap transition-all duration-300 ${
+                        open ? "opacity-100 max-w-32 delay-0" : "opacity-0 max-w-0 overflow-hidden"
+                      }`}>
+                        {item.label}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
-            );
-          })}
+            </div>
+          ))}
         </div>
 
         {/* Bottom: gear + version */}
