@@ -3,6 +3,7 @@ name: Build Tauri App
 on:
   push:
     branches: [main, master]
+    tags: ["v*.*.*"]
   pull_request:
     branches: [main, master]
   workflow_dispatch:
@@ -67,3 +68,28 @@ jobs:
           name: tools-33-exe-${{ matrix.os }}
           path: src-tauri/target/release/tools-33.exe
           if-no-files-found: warn
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: build
+    runs-on: windows-latest
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Tools-33 ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          body: |
+            ## Tools-33 ${{ github.ref_name }}
+
+            Descarga el instalador o el .exe portable desde los archivos adjuntos.
+          files: |
+            **/*.exe
+            **/*.msi
+            **/*.zip
+          fail_on_unmatched_files: false
+          generate_release_notes: true
