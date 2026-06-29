@@ -1,8 +1,13 @@
 import { useSystemInfo } from "../hooks/useSystemInfo";
 import InfoCard from "../components/InfoCard";
+import type { SystemInfo } from "../hooks/useSystemInfo";
 
-export default function SystemInfoScreen() {
-  const { systemInfo, loading } = useSystemInfo();
+interface Props {
+  cachedInfo?: SystemInfo | null;
+}
+
+export default function SystemInfoScreen({ cachedInfo }: Props) {
+  const { systemInfo, loading } = useSystemInfo(cachedInfo ?? undefined);
 
   return (
     <div

@@ -16,10 +16,10 @@ export interface SystemInfo {
 let cachedInfo: SystemInfo | null = null;
 let cachedVersion: string | null = null;
 
-export function useSystemInfo() {
-  const [systemInfo, setSystemInfo] = useState<SystemInfo | null>(cachedInfo);
+export function useSystemInfo(initialData?: SystemInfo) {
+  const [systemInfo, setSystemInfo] = useState<SystemInfo | null>(initialData ?? cachedInfo);
   const [appVersion, setAppVersion] = useState<string>(cachedVersion ?? "");
-  const [loading, setLoading] = useState(!cachedInfo);
+  const [loading, setLoading] = useState(!cachedInfo && !initialData);
 
   useEffect(() => {
     if (cachedInfo !== null && cachedVersion !== null) {

@@ -120,7 +120,7 @@ fn detect_gpu_pair() -> GpuPair {
             .output()
     } else if cfg!(target_os = "linux") {
         std::process::Command::new("sh")
-            .args(["-c", "lspci 2>/dev/null | grep -i 'vga\\|3d\\|display' | sed 's/^.*: : '"])
+            .args(["-c", "lspci 2>/dev/null | grep -i 'vga\\|3d\\|display' | sed 's/^.*: //'"])
             .output()
     } else {
         return GpuPair {
