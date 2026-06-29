@@ -201,6 +201,7 @@ export default function TextureGeneratorScreen() {
   const alertTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [nativeDragActive, setNativeDragActive] = useState(false);
   const nativeDragCounter = useRef(0);
+  const nativeDropHandled = useRef(false);
 
   const [settings, setSettings] = useState<TextureSettings>({
     paperSize: "letter",
@@ -339,6 +340,7 @@ export default function TextureGeneratorScreen() {
         } else if (event.payload.type === "drop") {
           nativeDragCounter.current = 0;
           setNativeDragActive(false);
+          nativeDropHandled.current = true;
           handleNativeDropFiles(event.payload.paths);
         }
       });
@@ -361,6 +363,11 @@ export default function TextureGeneratorScreen() {
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setDragActive(false);
+    // Si el manejador nativo de Tauri ya procesó el drop, evitar duplicar
+    if (nativeDropHandled.current) {
+      nativeDropHandled.current = false;
+      return;
+    }
     handleFiles(e.dataTransfer.files);
   };
 
