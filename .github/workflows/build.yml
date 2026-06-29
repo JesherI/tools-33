@@ -1,0 +1,112 @@
+name: Build Tools-33
+
+on:
+  push:
+    branches: [main, master, installer]
+    tags: ["v*.*.*"]
+  pull_request:
+    branches: [main, master, installer]
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-app:
+    name: Build Tools-33 app
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install frontend dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build Tauri app
+        run: pnpm tauri build --ci
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+
+      - name: Upload MSI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tools-33-msi
+          path: src-tauri/target/release/bundle/msi/*.msi
+          if-no-files-found: warn
+
+      - name: Upload portable exe
+        uses: actions/upload-artifact@v4
+        with:
+          name: tools-33-exe
+          path: src-tauri/target/release/tools-33.exe
+          if-no-files-found: warn
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [build-app]
+    runs-on: windows-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download MSI
+        uses: actions/download-artifact@v4
+        with:
+          name: tools-33-msi
+          path: release-artifacts
+
+      - name: Download portable exe
+        uses: actions/download-artifact@v4
+        with:
+          name: tools-33-exe
+          path: release-artifacts
+
+      - name: List release files
+        run: Get-ChildItem -Path "release-artifacts" -Recurse -File
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Tools-33 ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          body: |
+            ## Tools-33 ${{ github.ref_name }}
+
+            ### 📦 Descargas
+
+            | Archivo | Descripción |
+            |---------|-------------|
+            | `tools-33.msi` | Instalador MSI clásico |
+            | `tools-33.exe` | Versión portátil (sin instalación) |
+          files: |
+            release-artifacts/**
+          fail_on_unmatched_files: false
